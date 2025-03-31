@@ -1,0 +1,58 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+virtualenv/
+.venv
+.env
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Data files
+data/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.db
+*.sqlite3
+
+# Logs
+*.log
+log/
+logs/
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
+
+# OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Firefox webdriver specific
+geckodriver.log
+geckodriver
+geckodriver.exe
+
+# Selenium/browser temporary files
+*.tmp
+*.bak
+
