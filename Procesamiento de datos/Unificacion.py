@@ -3,44 +3,58 @@ import os
 from pathlib import Path
 import sys
 
-def procesar_datos_jugadores_tres_torneos(ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3, ruta_salida='data/jugadores_unificados.csv'):
+def procesar_datos_jugadores_cinco_torneos(ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3, 
+                                          ruta_csv_torneo4, ruta_csv_torneo5, 
+                                          ruta_salida='data/jugadores_unificados.csv'):
     """
-    Procesa los datos de jugadores de tres torneos, combinando estadísticas 
-    de jugadores duplicados y uniendo datos de los tres torneos.
+    Procesa los datos de jugadores de cinco torneos, combinando estadísticas 
+    de jugadores duplicados y uniendo datos de los cinco torneos.
     
     Args:
-        ruta_csv_torneo1: Ruta al CSV con datos del torneo Apertura 2024A
-        ruta_csv_torneo2: Ruta al CSV con datos del torneo Clausura 2024B
-        ruta_csv_torneo3: Ruta al CSV con datos del torneo Apertura 2025A (actual)
+        ruta_csv_torneo1: Ruta al CSV con datos del torneo Apertura 2023A
+        ruta_csv_torneo2: Ruta al CSV con datos del torneo Clausura 2023B
+        ruta_csv_torneo3: Ruta al CSV con datos del torneo Apertura 2024A
+        ruta_csv_torneo4: Ruta al CSV con datos del torneo Clausura 2024B
+        ruta_csv_torneo5: Ruta al CSV con datos del torneo Apertura 2025A (actual)
         ruta_salida: Ruta donde se guardará el archivo CSV unificado
     """
     # Verificar que los archivos existen
     for ruta, nombre in zip(
-        [ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3], 
-        ["Apertura 2024A", "Clausura 2024B", "Apertura 2025A"]
+        [ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3, ruta_csv_torneo4, ruta_csv_torneo5], 
+        ["Apertura 2023A", "Clausura 2023B", "Apertura 2024A", "Clausura 2024B", "Apertura 2025A"]
     ):
         if not os.path.exists(ruta):
             raise FileNotFoundError(f"No se pudo encontrar el archivo para el torneo {nombre} en la ruta: {ruta}")
     
-    print("Cargando datos del torneo Apertura 2024A...")
+    print("Cargando datos del torneo Apertura 2023A...")
     df_torneo1 = pd.read_csv(ruta_csv_torneo1)
     print(f"  ✓ Cargados {len(df_torneo1)} registros")
     
-    print("Cargando datos del torneo Clausura 2024B...")
+    print("Cargando datos del torneo Clausura 2023B...")
     df_torneo2 = pd.read_csv(ruta_csv_torneo2)
     print(f"  ✓ Cargados {len(df_torneo2)} registros")
     
-    print("Cargando datos del torneo Apertura 2025A (actual)...")
+    print("Cargando datos del torneo Apertura 2024A...")
     df_torneo3 = pd.read_csv(ruta_csv_torneo3)
     print(f"  ✓ Cargados {len(df_torneo3)} registros")
     
-    # Agregar columna para identificar el torneo
-    df_torneo1['Torneo'] = 'Apertura 2024A'
-    df_torneo2['Torneo'] = 'Clausura 2024B'
-    df_torneo3['Torneo'] = 'Apertura 2025A'
+    print("Cargando datos del torneo Clausura 2024B...")
+    df_torneo4 = pd.read_csv(ruta_csv_torneo4)
+    print(f"  ✓ Cargados {len(df_torneo4)} registros")
     
-    # Combinar los tres DataFrames
-    df_combinado = pd.concat([df_torneo1, df_torneo2, df_torneo3])
+    print("Cargando datos del torneo Apertura 2025A (actual)...")
+    df_torneo5 = pd.read_csv(ruta_csv_torneo5)
+    print(f"  ✓ Cargados {len(df_torneo5)} registros")
+    
+    # Agregar columna para identificar el torneo
+    df_torneo1['Torneo'] = 'Apertura 2023A'
+    df_torneo2['Torneo'] = 'Clausura 2023B'
+    df_torneo3['Torneo'] = 'Apertura 2024A'
+    df_torneo4['Torneo'] = 'Clausura 2024B'
+    df_torneo5['Torneo'] = 'Apertura 2025A'
+    
+    # Combinar los cinco DataFrames
+    df_combinado = pd.concat([df_torneo1, df_torneo2, df_torneo3, df_torneo4, df_torneo5])
     print(f"Total de registros combinados: {len(df_combinado)}")
     
     # Procesar jugadores duplicados
@@ -59,11 +73,13 @@ def procesar_datos_jugadores_tres_torneos(ruta_csv_torneo1, ruta_csv_torneo2, ru
     # Ordenar primero por nombre y luego por torneo en orden específico
     print("Ordenando por nombre y torneo...")
     
-    # Crear un mapeo para ordenar los torneos en el orden deseado
+    # Crear un mapeo para ordenar los torneos en el orden deseado (cronológico inverso)
     torneo_orden = {
-        'Apertura 2025A': 0,  # Primero
-        'Clausura 2024B': 1,  # Segundo
-        'Apertura 2024A': 2   # Tercero
+        'Apertura 2025A': 0,  # Primero (más reciente)
+        'Clausura 2024B': 1,
+        'Apertura 2024A': 2,
+        'Clausura 2023B': 3,
+        'Apertura 2023A': 4   # Último (más antiguo)
     }
     
     # Crear una columna temporal para ordenar por torneo
@@ -130,27 +146,31 @@ def unificar_jugadores_duplicados(df):
 # Ejemplo de uso
 if __name__ == "__main__":
     # Definir ruta de salida predeterminada
-    ruta_salida = "data/jugadores_unificados.csv"
+    ruta_salida = "data/jugadores_unificados_cinco_torneos.csv"
     
     # Obtener la ruta base del proyecto - ajusta esto según tu estructura de directorios
     # Esto asume que estás ejecutando el script desde el directorio 'Procesamiento de datos'
     base_path = os.path.join("..", "scraper", "data")
     
     # Rutas a los archivos CSV - ajústalas según la ubicación real de tus archivos
-    ruta_csv_torneo1 = os.path.join(base_path, "apertura_57374", "all", "jugadores_liga_colombiana_completo.csv")
-    ruta_csv_torneo2 = os.path.join(base_path, "clausura_63819", "all", "jugadores_liga_colombiana_completo.csv")
-    ruta_csv_torneo3 = os.path.join(base_path, "apertura_70681", "all", "jugadores_liga_colombiana_completo.csv")
+    ruta_csv_torneo1 = os.path.join(base_path, "apertura_48283", "all", "jugadores_liga_colombiana_completo.csv")
+    ruta_csv_torneo2 = os.path.join(base_path, "clausura_52847", "all", "jugadores_liga_colombiana_completo.csv")
+    ruta_csv_torneo3 = os.path.join(base_path, "apertura_57374", "all", "jugadores_liga_colombiana_completo.csv")
+    ruta_csv_torneo4 = os.path.join(base_path, "clausura_63819", "all", "jugadores_liga_colombiana_completo.csv")
+    ruta_csv_torneo5 = os.path.join(base_path, "apertura_70681", "all", "jugadores_liga_colombiana_completo.csv")
     
     print("Rutas de archivos a procesar:")
-    print(f"Torneo 1: {ruta_csv_torneo1}")
-    print(f"Torneo 2: {ruta_csv_torneo2}")
-    print(f"Torneo 3: {ruta_csv_torneo3}")
+    print(f"Apertura 2023A: {ruta_csv_torneo1}")
+    print(f"Clausura 2023B: {ruta_csv_torneo2}")
+    print(f"Apertura 2024A: {ruta_csv_torneo3}")
+    print(f"Clausura 2024B: {ruta_csv_torneo4}")
+    print(f"Apertura 2025A: {ruta_csv_torneo5}")
     
     # Verificar si los archivos existen
     archivos_existen = True
     for ruta, nombre in zip(
-        [ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3], 
-        ["Apertura 2024A", "Clausura 2024B", "Apertura 2025A"]
+        [ruta_csv_torneo1, ruta_csv_torneo2, ruta_csv_torneo3, ruta_csv_torneo4, ruta_csv_torneo5], 
+        ["Apertura 2023A", "Clausura 2023B", "Apertura 2024A", "Clausura 2024B", "Apertura 2025A"]
     ):
         if not os.path.exists(ruta):
             print(f"ERROR: No se encontró el archivo para el torneo {nombre} en: {ruta}")
@@ -158,32 +178,38 @@ if __name__ == "__main__":
     
     if not archivos_existen:
         print("\nPor favor, especifica las rutas correctas cuando ejecutes el script:")
-        print("python Unificacion.py <ruta_torneo1> <ruta_torneo2> <ruta_torneo3> [ruta_salida]")
+        print("python Unificacion.py <ruta_torneo1> <ruta_torneo2> <ruta_torneo3> <ruta_torneo4> <ruta_torneo5> [ruta_salida]")
         
         # Si hay argumentos de línea de comandos, usarlos como rutas
-        if len(sys.argv) >= 4:
+        if len(sys.argv) >= 6:
             ruta_csv_torneo1 = sys.argv[1]
             ruta_csv_torneo2 = sys.argv[2]
             ruta_csv_torneo3 = sys.argv[3]
-            if len(sys.argv) >= 5:
-                ruta_salida = sys.argv[4]
+            ruta_csv_torneo4 = sys.argv[4]
+            ruta_csv_torneo5 = sys.argv[5]
+            if len(sys.argv) >= 7:
+                ruta_salida = sys.argv[6]
             print("\nUsando rutas desde argumentos de línea de comandos.")
         else:
             # Solicitar rutas al usuario
             print("\nPor favor, ingresa las rutas completas a los archivos:")
-            ruta_csv_torneo1 = input("Ruta al CSV del torneo Apertura 2024A: ")
-            ruta_csv_torneo2 = input("Ruta al CSV del torneo Clausura 2024B: ")
-            ruta_csv_torneo3 = input("Ruta al CSV del torneo Apertura 2025A: ")
-            ruta_salida_input = input("Ruta de salida para el CSV unificado (deja en blanco para usar 'data/jugadores_unificados.csv'): ")
+            ruta_csv_torneo1 = input("Ruta al CSV del torneo Apertura 2023A: ")
+            ruta_csv_torneo2 = input("Ruta al CSV del torneo Clausura 2023B: ")
+            ruta_csv_torneo3 = input("Ruta al CSV del torneo Apertura 2024A: ")
+            ruta_csv_torneo4 = input("Ruta al CSV del torneo Clausura 2024B: ")
+            ruta_csv_torneo5 = input("Ruta al CSV del torneo Apertura 2025A: ")
+            ruta_salida_input = input("Ruta de salida para el CSV unificado (deja en blanco para usar 'data/jugadores_unificados_cinco_torneos.csv'): ")
             if ruta_salida_input:
                 ruta_salida = ruta_salida_input
     
     try:
         # Procesar datos
-        df_unificado = procesar_datos_jugadores_tres_torneos(
+        df_unificado = procesar_datos_jugadores_cinco_torneos(
             ruta_csv_torneo1, 
             ruta_csv_torneo2, 
             ruta_csv_torneo3,
+            ruta_csv_torneo4,
+            ruta_csv_torneo5,
             ruta_salida
         )
         

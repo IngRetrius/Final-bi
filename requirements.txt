@@ -1,4 +1,3 @@
-
 # Web scraping básico
 requests==2.31.0
 beautifulsoup4==4.12.2
@@ -11,6 +10,25 @@ webdriver-manager==4.0.1
 # Manejo de datos
 numpy==1.24.3
 pandas==2.0.3
+
+# Visualización de datos
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.17.0
+
+# Análisis estadístico y modelos
+scikit-learn==1.3.0
+statsmodels==0.14.0
+scipy==1.11.3
+
+# Series temporales (opcional)
+pmdarima==2.0.3
+prophet==1.1.4
+
+# Jupyter y entorno de desarrollo
+jupyter==1.0.0
+notebook==7.0.6
+ipykernel==6.25.2
 
 # Utilidades
 python-dotenv==1.0.0
