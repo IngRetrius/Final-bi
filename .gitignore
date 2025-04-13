@@ -56,3 +56,5 @@ geckodriver.exe
 *.tmp
 *.bak
 
+# Jupyter Notebook checkpoints
+*.pkl
